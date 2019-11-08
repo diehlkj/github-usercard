@@ -24,8 +24,6 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
-
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
 
@@ -53,3 +51,90 @@ const followersArray = [];
   luishrd
   bigknell
 */
+
+// const followersArray = [
+//   'https://api.github.com/users/diehlkj',
+//   'https://api.github.com/users/tetondan',
+//   'https://api.github.com/users/dustinmyers',
+//   'https://api.github.com/users/justsml',
+//   'https://api.github.com/users/luishrd',
+//   'https://api.github.com/users/bigknell'
+// ];
+
+const newCard = (user) => {
+  const card = document.createElement('div');
+    const userImg = document.createElement('img');
+    const cardInfo = document.createElement('div');
+      const name = document.createElement('h3');
+      const username = document.createElement('p');
+      const location = document.createElement('p');
+      const profile = document.createElement('p');
+        const profileLink = document.createElement('a');
+      const followers = document.createElement('p');
+      const following = document.createElement('p');
+      const bio = document.createElement('p');
+  
+  card.classList.add('card');
+    cardInfo.classList.add('card-info');
+      name.classList.add('name');
+      username.classList.add('username');
+
+  userImg.src = user.avatar_url;
+    name.textContent = user.name;
+    username.textContent = user.login;
+    location.textContent = `Location: ${user.location}`;
+    profile.textContent = 'GitHub Profile: ';
+      profileLink.textContent = user.html_url;
+      profileLink.href = user.html_url;
+    followers.textContent = `Followers: ${user.followers}`;
+    following.textContent = `Following: ${user.following}`;
+    bio.textContent = `Bio: ${user.bio}`;
+  
+  card.appendChild(userImg);
+  card.appendChild(cardInfo);
+    cardInfo.appendChild(name);
+    cardInfo.appendChild(username);
+    cardInfo.appendChild(location);
+    cardInfo.appendChild(profile);
+      profile.appendChild(profileLink);
+    cardInfo.appendChild(followers);
+    cardInfo.appendChild(following);
+    cardInfo.appendChild(bio);
+  
+  return card;
+}
+const cardContainer = document.querySelector('.cards');
+
+
+axios
+  .get('https://api.github.com/users/diehlkj')
+  .then((response) => {
+    console.log(response);
+    cardContainer.appendChild(newCard(response.data));
+    axios
+      .get(response.data.followers_url)
+      .then((response) => {
+        console.log(response);
+        response.data.forEach((item) => {
+          axios
+            .get(`https://api.github.com/users/${item.login}`)
+            .then((response) => {
+              console.log(response);
+              cardContainer.appendChild(newCard(response.data));
+            });
+        });
+      });
+  });
+
+
+// followersArray.forEach((link) => {
+//   axios
+//     .get(link)
+//     .then((response) => {
+//       console.log(response);
+//       cardContainer.appendChild(newCard(response));
+//     })
+//     .catch((error) => {
+//       console.log('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH OH NO :(', error);
+//     });
+// });
